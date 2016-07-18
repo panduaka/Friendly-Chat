@@ -15,6 +15,7 @@
  */
 package com.google.firebase.codelab.friendlychat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -62,8 +63,7 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         public TextView messageTextView;
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements
     private String mUsername;
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
+    private SharedPreferences userEmailHolder;
 
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseAnalytics mFirebaseAnalytics;
     private EditText mMessageEditText;
     private AdView mAdView;
+    private String email;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
     private GoogleApiClient mGoogleApiClient;
 
@@ -108,11 +110,14 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mUsername = ANONYMOUS;
+        userEmailHolder = getSharedPreferences("UserEmail", Context.MODE_PRIVATE);
+        //mUsername = ANONYMOUS;
+
+        email = getIntent().getStringExtra("email");
 
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser(); //getting the current user
 
         if (mFirebaseUser == null) {
             // Not signed in, launch the Sign In activity
@@ -120,7 +125,15 @@ public class MainActivity extends AppCompatActivity implements
             finish();
             return;
         } else {
-            mUsername = mFirebaseUser.getDisplayName();
+
+            if(email!=null){
+                initialization();
+            }
+            else {
+                mUsername = userEmailHolder.getString("email", "Anonymous");
+            }
+
+            //mUsername = mFirebaseUser.getDisplayName();
             //mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
         }
 
@@ -136,10 +149,10 @@ public class MainActivity extends AppCompatActivity implements
 
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
         mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(
-                        FriendlyMessage.class,
-                        R.layout.item_message,
-                        MessageViewHolder.class,
-                        mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
+                FriendlyMessage.class,
+                R.layout.item_message,
+                MessageViewHolder.class,
+                mFirebaseDatabaseReference.child(MESSAGES_CHILD)) {
 
             @Override
             protected void populateViewHolder(MessageViewHolder viewHolder, FriendlyMessage friendlyMessage, int position) {
@@ -189,13 +202,13 @@ public class MainActivity extends AppCompatActivity implements
         // Define Firebase Remote Config Settings.
         FirebaseRemoteConfigSettings firebaseRemoteConfigSettings =
                 new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(true)
-                .build();
+                        .setDeveloperModeEnabled(true)
+                        .build();
 
         // Define default config values. Defaults are used when fetched config values are not
         // available. Eg: if an error occurred fetching values from the server.
         Map<String, Object> defaultConfigMap = new HashMap<>();
-        defaultConfigMap.put("friendly_msg_length", 10L);
+        defaultConfigMap.put("friendly_msg_length", 300L);
 
         // Apply config settings and default values.
         mFirebaseRemoteConfig.setConfigSettings(firebaseRemoteConfigSettings);
@@ -239,20 +252,38 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    private void initialization() {
+//        if (email==null) {
+//            mUsername = userEmailHolder.getString("email", "Anonymous");
+//        } else {
+//
+//        }
+            SharedPreferences.Editor editor = userEmailHolder.edit();
+            editor.putString("email", email);
+            editor.commit();
+            mUsername = userEmailHolder.getString("email", "Anonymous");
+
+
+    }
+
     @Override
     public void onPause() {
-        if (mAdView != null) {
-            mAdView.pause();
-        }
+//        if (mAdView != null) {
+//            mAdView.pause();
+//        }
         super.onPause();
+        mUsername = email;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mAdView != null) {
-            mAdView.resume();
-        }
+//        if (mAdView != null) {
+//            mAdView.resume();
+//        }
+        mUsername = userEmailHolder.getString("email", "Anonymous");
+        //mUsername=email;
+
     }
 
     @Override
@@ -284,9 +315,13 @@ public class MainActivity extends AppCompatActivity implements
                 mFirebaseAuth.signOut();
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 mFirebaseUser = null;
+                SharedPreferences.Editor editor = userEmailHolder.edit();
+                editor.putString("email", "Anonymous");
+                editor.commit();
                 mUsername = ANONYMOUS;
                 mPhotoUrl = null;
                 startActivity(new Intent(this, SignInActivity.class));
+                finish();
                 return true;
             case R.id.fresh_config_menu:
                 fetchConfig();
@@ -297,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void causeCrash() {
+
         throw new NullPointerException("Fake null pointer exception");
     }
 
