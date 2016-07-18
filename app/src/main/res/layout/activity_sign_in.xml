@@ -1,22 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:id="@+id/sign_in_layout"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:gravity="center"
-             android:orientation="vertical">
+    android:id="@+id/sign_in_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
+
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:cursorVisible="false"
+        android:hint="E-mail"
+        android:textAlignment="center"
+        android:padding="10dp"
+        android:id="@+id/editText"
+        android:layout_marginTop="91dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/editText2"
+        android:layout_alignStart="@+id/editText2" />
+
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:padding="10dp"
+        android:cursorVisible="false"
+        android:hint="password"
+        android:textAlignment="center"
+        android:ems="10"
+        android:id="@+id/editText2"
+        android:layout_below="@+id/editText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="39dp" />
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:text="Sign Up"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/sign_in_button"
-        android:layout_alignEnd="@+id/sign_in_button" />
+        android:text="Log In"
+        android:padding="20dp"
+        android:id="@+id/button"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
@@ -25,37 +51,20 @@
         android:visibility="visible"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_below="@+id/button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="49dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Click here to Sign Up"
+        android:textAlignment="center"
+        android:id="@+id/textView"
+        android:layout_marginTop="41dp"
+        android:layout_below="@+id/sign_in_button"
         android:layout_centerHorizontal="true" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/editText"
-        android:layout_below="@+id/textView"
-        android:layout_alignLeft="@+id/editText2"
-        android:layout_alignStart="@+id/editText2" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:id="@+id/editText2"
-        android:layout_below="@+id/editText"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Log In"
-        android:id="@+id/button"
-        android:layout_below="@+id/editText2"
-        android:layout_alignLeft="@+id/textView"
-        android:layout_alignStart="@+id/textView"
-        android:layout_marginTop="42dp"
-        android:layout_alignRight="@+id/textView"
-        android:layout_alignEnd="@+id/textView" />
 
 </RelativeLayout>

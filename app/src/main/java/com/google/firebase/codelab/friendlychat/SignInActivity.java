@@ -72,6 +72,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         signUp=(TextView)findViewById(R.id.textView);
         login=(Button)findViewById(R.id.button);
 
+        mSignInButton.setSize(SignInButton.SIZE_WIDE);
 
         // Set click listeners
         mSignInButton.setOnClickListener(this);
