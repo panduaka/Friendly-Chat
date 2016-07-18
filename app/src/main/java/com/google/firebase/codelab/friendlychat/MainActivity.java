@@ -253,17 +253,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void initialization() {
-//        if (email==null) {
-//            mUsername = userEmailHolder.getString("email", "Anonymous");
-//        } else {
-//
-//        }
             SharedPreferences.Editor editor = userEmailHolder.edit();
             editor.putString("email", email);
             editor.commit();
             mUsername = userEmailHolder.getString("email", "Anonymous");
-
-
     }
 
     @Override
