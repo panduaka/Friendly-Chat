@@ -44,6 +44,7 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.appinvite.AppInvite;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.android.gms.auth.api.Auth;
@@ -54,6 +55,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.codelab.friendlychat.ui.Settings;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private SharedPreferences mSharedPreferences;
     private SharedPreferences firstRun;
     private SharedPreferences userEmailHolder;
-    private SharedPreferences userDetailsHolder;
+    public static SharedPreferences userDetailsHolder;
 
     private EditText mMessageEditText;
     //private AdView mAdView;
@@ -288,12 +290,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
-    private void initialization() {
-        SharedPreferences.Editor editor = userEmailHolder.edit();
-        editor.putString("email", email);
-        editor.commit();
-        //mUsername=userDetailsHolder.getString("Name","Anonymous");
-    }
+//    private void initialization() {
+//        SharedPreferences.Editor editor = userEmailHolder.edit();
+//        editor.putString("email", email);
+//        editor.commit();
+//        //mUsername=userDetailsHolder.getString("Name","Anonymous");
+//    }
 
     @Override
     public void onPause() {
@@ -337,6 +339,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.invite_menu:
                 sendInvitation();
@@ -349,17 +352,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 mFirebaseAuth.signOut();
                 Auth.GoogleSignInApi.signOut(mGoogleApiClient);
                 mFirebaseUser = null;
-                SharedPreferences.Editor editor = userEmailHolder.edit();
-                editor.putString("email", "Anonymous");
-                editor.commit();
-                mUsername = ANONYMOUS;
-                mPhotoUrl = null;
                 startActivity(new Intent(this, SignInActivity.class));
                 finish();
                 return true;
             case R.id.fresh_config_menu:
                 fetchConfig();
                 return true;
+            case R.id.settings:
+                Intent intent=new Intent(this,Settings.class);
+                startActivity(intent);
             default:
                 return super.onOptionsItemSelected(item);
         }

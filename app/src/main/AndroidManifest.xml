@@ -22,9 +22,13 @@
 
         <activity android:name=".SignInActivity" />
 
-        <activity android:name=".SignUpActivity">
-
+        <activity
+            android:name=".SignUpActivity"
+            android:label="Sign Up">
         </activity>
+
+        <activity android:name=".ui.Settings"
+            android:label="Settings"></activity>
 
         <service
             android:name=".MyFirebaseMessagingService"

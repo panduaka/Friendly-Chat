@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +27,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by windows 8.1 on 7/17/2016.
@@ -56,6 +61,27 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         password = (EditText) findViewById(R.id.editText4);
         signUp = (Button) findViewById(R.id.button2);
         cancel=(Button)findViewById(R.id.button3);
+
+        email.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+                if (email.getText().toString().matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+") && s.length() > 0)
+                {
+                  //Toast.makeText(SignUpActivity.this,"Email is Valid",Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                   // Toast.makeText(SignUpActivity.this,"Email is not Valid",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         signUp.setOnClickListener(this);
         cancel.setOnClickListener(this);
@@ -95,24 +121,30 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             }
             else{
 
-                auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(isEmailValid(email))
+                {
+                    auth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
 
-                                Toast.makeText(SignUpActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
-                                if (!task.isSuccessful()) {
-                                    Toast.makeText(SignUpActivity.this, "Authentication failed." + task.getException(), Toast.LENGTH_SHORT).show();
-                                    Log.i("Exception", String.valueOf(task.getException()));
-                                } else {
-                                    //writeNewuser(name,email);
-                                    startActivity(new Intent(SignUpActivity.this, MainActivity.class));
-                                    finish();
+                                    Toast.makeText(SignUpActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
+                                    if (!task.isSuccessful()) {
+                                        Toast.makeText(SignUpActivity.this, "Authentication failed." + task.getException(), Toast.LENGTH_SHORT).show();
+                                        Log.i("Exception", String.valueOf(task.getException()));
+                                    } else {
+                                        //writeNewuser(name,email);
+                                        startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+                                        finish();
+                                    }
+
                                 }
+                            });
+                }
+                else {
+                    Toast.makeText(this,"Enter a Valid Email",Toast.LENGTH_SHORT).show();
+                }
 
-                            }
-                        });
-                //databaseRef.child("User Details").push();
 
             }
 
@@ -124,6 +156,20 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             startActivity(intent);
         }
 
+    }
+
+    private boolean isEmailValid(String email) {
+        boolean isValid=false;
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        CharSequence inputStr = email;
+
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(inputStr);
+        if (matcher.matches()) {
+            isValid = true;
+        }
+
+        return isValid;
     }
 
     private void ShowErrorMessage(String s) {
