@@ -71,6 +71,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void informationUpload(String name, String number, String genderSelected) {
 
         Toast.makeText(this,name+number+genderSelected,Toast.LENGTH_LONG).show();
+        SharedPreferences.Editor editor=userDetailsHolder.edit();
+        editor.putString("Name",name);
+        editor.putString("Mobile",number);
+        editor.putString("Gender",genderSelected);
+        editor.putString("Email",email);
+        editor.commit();
+        mUsername=userDetailsHolder.getString("Name","Default");
         writeData(name,number,genderSelected);
     }
 
@@ -79,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         TelephonyManager telephoneyManager= (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String IMEI=telephoneyManager.getDeviceId();
 
-        UserDetails userDetails=new UserDetails(name,number,IMEI,genderSelected);
-        Log.i("OBject", String.valueOf(userDetails));
+        UserDetails userDetails=new UserDetails(name,number,IMEI,genderSelected,email);
+        Log.i("Object", String.valueOf(userDetails));
         mFirebaseDatabaseReference.child("USER").child(name).push().setValue(userDetails);
 
         Log.i("Success","True");
@@ -99,32 +106,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
+    //Final Static
     private static final String TAG = "MainActivity";
     public static final String MESSAGES_CHILD = "messages";
     private static final int REQUEST_INVITE = 1;
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 10;
     public static final String ANONYMOUS = "anonymous";
     private static final String MESSAGE_SENT_EVENT = "message_sent";
-    private String mUsername;
-    private String mPhotoUrl;
+
+    //SharedPreferences
     private SharedPreferences mSharedPreferences;
     private SharedPreferences firstRun;
     private SharedPreferences userEmailHolder;
+    private SharedPreferences userDetailsHolder;
 
+    private EditText mMessageEditText;
+    //private AdView mAdView;
+    private String email;
+    private String mUsername;
+    private String mPhotoUrl;
     private Button mSendButton;
     private RecyclerView mMessageRecyclerView;
     private LinearLayoutManager mLinearLayoutManager;
     private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder> mFirebaseAdapter;
     private ProgressBar mProgressBar;
+
+    //FireBase
     private DatabaseReference mFirebaseDatabaseReference;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFirebaseUser;
     private FirebaseAnalytics mFirebaseAnalytics;
-    private EditText mMessageEditText;
-    private AdView mAdView;
-    private String email;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
+
+    // Google API Client
     private GoogleApiClient mGoogleApiClient;
+
+
+    //OnCreate
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,8 +151,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         userEmailHolder = getSharedPreferences("UserEmail", Context.MODE_PRIVATE);
+        userDetailsHolder=getSharedPreferences("UserDetails",Context.MODE_PRIVATE);
         firstRun=getSharedPreferences("FirstRun",Context.MODE_PRIVATE);
-        //mUsername = ANONYMOUS;
 
         email = getIntent().getStringExtra("email");
 
@@ -153,11 +171,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 initialization();
             }
             else {
-                mUsername = userEmailHolder.getString("email", "Anonymous");
+                Toast.makeText(this,"Email was empty",Toast.LENGTH_SHORT).show();
             }
 
-            //mUsername = mFirebaseUser.getDisplayName();
-            //mPhotoUrl = mFirebaseUser.getPhotoUrl().toString();
         }
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -211,10 +227,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
 
-        // Initialize and request AdMob ad.
-//        mAdView = (AdView) findViewById(R.id.adView);
-//        AdRequest adRequest = new AdRequest.Builder().build();
-//        mAdView.loadAd(adRequest);
 
         // Initialize Firebase Measurement.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -230,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         // Define default config values. Defaults are used when fetched config values are not
         // available. Eg: if an error occurred fetching values from the server.
+
         Map<String, Object> defaultConfigMap = new HashMap<>();
         defaultConfigMap.put("friendly_msg_length", 300L);
 
@@ -266,8 +279,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername,
-                        mPhotoUrl);
+                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, mPhotoUrl);
                 mFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(friendlyMessage);
                 mMessageEditText.setText("");
                 mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
@@ -279,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             SharedPreferences.Editor editor = userEmailHolder.edit();
             editor.putString("email", email);
             editor.commit();
-            mUsername = userEmailHolder.getString("email", "Anonymous");
+            //mUsername=userDetailsHolder.getString("Name","Anonymous");
     }
 
     @Override
@@ -288,15 +300,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 //            mAdView.pause();
 //        }
         super.onPause();
-        mUsername = email;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-//        if (mAdView != null) {
-//            mAdView.resume();
-//        }
 
         Log.i("FirstRun", String.valueOf(firstRun.getBoolean("FirstRun",true)));
 
@@ -309,18 +317,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             editor.putBoolean("FirstRun",false);
             editor.commit();
         }
-//        USerDetailsAlertDialog uSerDetailsAlertDialog=new USerDetailsAlertDialog();
-//        uSerDetailsAlertDialog.show(getFragmentManager(),"UserInformation");
-        mUsername = userEmailHolder.getString("email", "Anonymous");
-        //mUsername=email;
+        
+        mUsername = userDetailsHolder.getString("Name", "Anonymous");
 
     }
 
     @Override
     public void onDestroy() {
-        if (mAdView != null) {
-            mAdView.destroy();
-        }
+//        if (mAdView != null) {
+//            mAdView.destroy();
+//        }
         super.onDestroy();
     }
 
