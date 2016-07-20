@@ -22,7 +22,7 @@ import java.util.zip.Inflater;
  * Created by windows 8.1 on 7/20/2016.
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class USerDetailsAlertDialog extends DialogFragment{
+public class USerDetailsAlertDialog extends DialogFragment {
 
     GetUserInformation getUserInformation;
     String name;
@@ -30,7 +30,7 @@ public class USerDetailsAlertDialog extends DialogFragment{
     String number;
     EditText numberText;
     String genderSelected;
-    final CharSequence gender[]={"Male","Female"};
+    final CharSequence gender[] = {"Male", "Female"};
     Dialog dialog;
 
 
@@ -38,7 +38,7 @@ public class USerDetailsAlertDialog extends DialogFragment{
     public void onAttach(Activity activity) {
         super.onAttach(activity);
 
-        getUserInformation= (GetUserInformation) activity;
+        getUserInformation = (GetUserInformation) activity;
     }
 
     @Override
@@ -50,16 +50,16 @@ public class USerDetailsAlertDialog extends DialogFragment{
         builder.setView(v);
         builder.setTitle("User Information");
         builder.setCancelable(false);
-        builder.setSingleChoiceItems(gender,-1, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(gender, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                switch (which){
+                switch (which) {
                     case 0:
-                        genderSelected="Male";
+                        genderSelected = "Male";
                         break;
                     case 1:
-                        genderSelected="Female";
+                        genderSelected = "Female";
                         break;
                 }
 
@@ -74,10 +74,10 @@ public class USerDetailsAlertDialog extends DialogFragment{
                 nameText = (EditText) v.findViewById(R.id.editText6);
                 name = nameText.getText().toString();
 
-                numberText=(EditText)v.findViewById(R.id.editText7);
-                number=numberText.getText().toString();
-                Log.i("Info",number+name+genderSelected);
-                getUserInformation.informationUpload(name,number,genderSelected);
+                numberText = (EditText) v.findViewById(R.id.editText7);
+                number = numberText.getText().toString();
+                Log.i("Info", number + name + genderSelected);
+                getUserInformation.informationUpload(name, number, genderSelected);
                 dialog.dismiss();
 
             }
@@ -87,7 +87,7 @@ public class USerDetailsAlertDialog extends DialogFragment{
     }
 
 
-    public interface GetUserInformation{
+    public interface GetUserInformation {
 
         void informationUpload(String name, String number, String genderSelected);
     }

@@ -1,12 +1,12 @@
 /**
  * Copyright Google Inc. All Rights Reserved.
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,32 +65,32 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,USerDetailsAlertDialog.GetUserInformation {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, USerDetailsAlertDialog.GetUserInformation {
 
     @Override
     public void informationUpload(String name, String number, String genderSelected) {
 
-        Toast.makeText(this,name+number+genderSelected,Toast.LENGTH_LONG).show();
-        SharedPreferences.Editor editor=userDetailsHolder.edit();
-        editor.putString("Name",name);
-        editor.putString("Mobile",number);
-        editor.putString("Gender",genderSelected);
-        editor.putString("Email",email);
+        Toast.makeText(this, name + number + genderSelected, Toast.LENGTH_LONG).show();
+        SharedPreferences.Editor editor = userDetailsHolder.edit();
+        editor.putString("Name", name);
+        editor.putString("Mobile", number);
+        editor.putString("Gender", genderSelected);
+        editor.putString("Email", email);
         editor.commit();
-        mUsername=userDetailsHolder.getString("Name","Default");
-        writeData(name,number,genderSelected);
+        mUsername = userDetailsHolder.getString("Name", "Default");
+        writeData(name, number, genderSelected);
     }
 
     private void writeData(String name, String number, String genderSelected) {
 
-        TelephonyManager telephoneyManager= (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String IMEI=telephoneyManager.getDeviceId();
+        TelephonyManager telephoneyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        String IMEI = telephoneyManager.getDeviceId();
 
-        UserDetails userDetails=new UserDetails(name,number,IMEI,genderSelected,email);
+        UserDetails userDetails = new UserDetails(name, number, IMEI, genderSelected, email);
         Log.i("Object", String.valueOf(userDetails));
         mFirebaseDatabaseReference.child("USER").child(name).push().setValue(userDetails);
 
-        Log.i("Success","True");
+        Log.i("Success", "True");
     }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -151,8 +151,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         userEmailHolder = getSharedPreferences("UserEmail", Context.MODE_PRIVATE);
-        userDetailsHolder=getSharedPreferences("UserDetails",Context.MODE_PRIVATE);
-        firstRun=getSharedPreferences("FirstRun",Context.MODE_PRIVATE);
+        userDetailsHolder = getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
+        firstRun = getSharedPreferences("FirstRun", Context.MODE_PRIVATE);
 
         email = getIntent().getStringExtra("email");
 
@@ -165,16 +165,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
-        } else {
-
-            if(email!=null){
-                initialization();
-            }
-            else {
-                Toast.makeText(this,"Email was empty",Toast.LENGTH_SHORT).show();
-            }
-
         }
+//        else {
+//
+//            if(email!=null){
+//                initialization();
+//            }
+//            else {
+//                Toast.makeText(this,"Email was empty",Toast.LENGTH_SHORT).show();
+//            }
+//
+//        }
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
@@ -288,17 +289,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void initialization() {
-            SharedPreferences.Editor editor = userEmailHolder.edit();
-            editor.putString("email", email);
-            editor.commit();
-            //mUsername=userDetailsHolder.getString("Name","Anonymous");
+        SharedPreferences.Editor editor = userEmailHolder.edit();
+        editor.putString("email", email);
+        editor.commit();
+        //mUsername=userDetailsHolder.getString("Name","Anonymous");
     }
 
     @Override
     public void onPause() {
-//        if (mAdView != null) {
-//            mAdView.pause();
-//        }
         super.onPause();
     }
 
@@ -306,18 +304,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onResume() {
         super.onResume();
 
-        Log.i("FirstRun", String.valueOf(firstRun.getBoolean("FirstRun",true)));
+        Log.i("FirstRun", String.valueOf(firstRun.getBoolean("FirstRun", true)));
 
-        if(firstRun.getBoolean("FirstRun",true)){
+        if (firstRun.getBoolean("FirstRun", true)) {
 
-            USerDetailsAlertDialog uSerDetailsAlertDialog=new USerDetailsAlertDialog();
-            uSerDetailsAlertDialog.show(getFragmentManager(),"UserInformation");
+            USerDetailsAlertDialog uSerDetailsAlertDialog = new USerDetailsAlertDialog();
+            uSerDetailsAlertDialog.show(getFragmentManager(), "UserInformation");
 
-            SharedPreferences.Editor editor=firstRun.edit();
-            editor.putBoolean("FirstRun",false);
+            SharedPreferences.Editor editor = firstRun.edit();
+            editor.putBoolean("FirstRun", false);
             editor.commit();
         }
-        
+
         mUsername = userDetailsHolder.getString("Name", "Anonymous");
 
     }

@@ -57,7 +57,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     private FirebaseAuth.AuthStateListener listener;
     private EditText email;
     private EditText password;
-    private  TextView signUp;
+    private TextView signUp;
     private Button login;
 
     @Override
@@ -69,8 +69,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
         mSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
         email = (EditText) findViewById(R.id.editText);
         password = (EditText) findViewById(R.id.editText2);
-        signUp=(TextView)findViewById(R.id.textView);
-        login=(Button)findViewById(R.id.button);
+        signUp = (TextView) findViewById(R.id.textView);
+        login = (Button) findViewById(R.id.button);
 
         mSignInButton.setSize(SignInButton.SIZE_WIDE);
 
@@ -90,7 +90,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
         // Initialize FirebaseAuth
         mFirebaseAuth = FirebaseAuth.getInstance();
-        listener=new FirebaseAuth.AuthStateListener() {
+        listener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -125,7 +125,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                 signIn();
                 break;
             case R.id.textView:
-                Intent intent=new Intent(this,SignUpActivity.class);
+                Intent intent = new Intent(this, SignUpActivity.class);
                 startActivity(intent);
                 break;
 
@@ -138,33 +138,37 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
     private void logIn() {
 
-        Toast.makeText(this, "Log In clicked", Toast.LENGTH_SHORT).show();
-
         final String email = this.email.getText().toString();
         String password = this.password.getText().toString();
 
-        mFirebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+        if (email.isEmpty() || password.isEmpty()) {
 
-                        if (task.isSuccessful()) {
-                            Log.i("LogIn", "LogIn Successful");
-                            Toast.makeText(SignInActivity.this, "LogIn Successful", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                            intent.putExtra("email", email);
-                            startActivity(intent);
-                            finish();
+            Toast.makeText(this, "Enter Email and Password", Toast.LENGTH_SHORT).show();
+        } else {
+            mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+
+                            if (task.isSuccessful()) {
+                                Log.i("LogIn", "LogIn Successful");
+                                Toast.makeText(SignInActivity.this, "LogIn Successful", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                intent.putExtra("email", email);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                            if (!task.isSuccessful()) {
+                                Log.i("LoIn", "LogIn Failed");
+                                Toast.makeText(SignInActivity.this, "LogIn failed Check email and password", Toast.LENGTH_SHORT).show();
+
+                            }
+
                         }
+                    });
+        }
 
-                        if (!task.isSuccessful()) {
-                            Log.i("LoIn", "LogIn Failed");
-                            Toast.makeText(SignInActivity.this, "LogIn failed Check email and password", Toast.LENGTH_SHORT).show();
-
-                        }
-
-                    }
-                });
     }
 
     private void signIn() {
