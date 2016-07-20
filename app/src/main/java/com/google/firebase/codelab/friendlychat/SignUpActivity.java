@@ -126,30 +126,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
-    private void writeNewuser(String name, String email) {
-
-        Log.i("WriteData","Write data");
-        UserDetails userDetails=new UserDetails(name,email);
-        Log.i("Object", String.valueOf(userDetails));
-
-        DatabaseReference user=databaseRef.child("User");
-        user.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        //databaseRef.child("Users").child(name).setValue(userDetails);
-        analytics.logEvent("Data send",null);
-        Log.i("WriteData","Data Written");
-    }
-
     private void ShowErrorMessage(String s) {
 
 //        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
@@ -176,4 +152,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         auth.addAuthStateListener(authStateListener);
 
     }
+
+
 }

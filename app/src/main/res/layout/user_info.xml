@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp">
+
+        <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="Name(Display Name)"
+            android:textAlignment="center"
+            android:cursorVisible="false"
+            android:ems="10"
+            android:id="@+id/editText6"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp" />
+
+        <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:ems="10"
+            android:hint="Phone Number"
+            android:textAlignment="center"
+            android:id="@+id/editText7"
+            android:layout_below="@+id/editText6"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="35dp" />
+
+    </RelativeLayout>
+</LinearLayout>

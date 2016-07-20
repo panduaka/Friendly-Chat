@@ -25,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -37,6 +38,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -63,7 +65,26 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,USerDetailsAlertDialog.GetUserInformation {
+
+    @Override
+    public void informationUpload(String name, String number, String genderSelected) {
+
+        Toast.makeText(this,name+number+genderSelected,Toast.LENGTH_LONG).show();
+        writeData(name,number,genderSelected);
+    }
+
+    private void writeData(String name, String number, String genderSelected) {
+
+        TelephonyManager telephoneyManager= (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        String IMEI=telephoneyManager.getDeviceId();
+
+        UserDetails userDetails=new UserDetails(name,number,IMEI,genderSelected);
+        Log.i("OBject", String.valueOf(userDetails));
+        mFirebaseDatabaseReference.child("USER").child(name).push().setValue(userDetails);
+
+        Log.i("Success","True");
+    }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         public TextView messageTextView;
@@ -87,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private String mUsername;
     private String mPhotoUrl;
     private SharedPreferences mSharedPreferences;
+    private SharedPreferences firstRun;
     private SharedPreferences userEmailHolder;
 
     private Button mSendButton;
@@ -111,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         userEmailHolder = getSharedPreferences("UserEmail", Context.MODE_PRIVATE);
+        firstRun=getSharedPreferences("FirstRun",Context.MODE_PRIVATE);
         //mUsername = ANONYMOUS;
 
         email = getIntent().getStringExtra("email");
@@ -274,6 +297,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 //        if (mAdView != null) {
 //            mAdView.resume();
 //        }
+
+        Log.i("FirstRun", String.valueOf(firstRun.getBoolean("FirstRun",true)));
+
+        if(firstRun.getBoolean("FirstRun",true)){
+
+            USerDetailsAlertDialog uSerDetailsAlertDialog=new USerDetailsAlertDialog();
+            uSerDetailsAlertDialog.show(getFragmentManager(),"UserInformation");
+
+            SharedPreferences.Editor editor=firstRun.edit();
+            editor.putBoolean("FirstRun",false);
+            editor.commit();
+        }
+//        USerDetailsAlertDialog uSerDetailsAlertDialog=new USerDetailsAlertDialog();
+//        uSerDetailsAlertDialog.show(getFragmentManager(),"UserInformation");
         mUsername = userEmailHolder.getString("email", "Anonymous");
         //mUsername=email;
 
