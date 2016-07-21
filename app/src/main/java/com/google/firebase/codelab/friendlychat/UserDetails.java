@@ -1,5 +1,9 @@
 package com.google.firebase.codelab.friendlychat;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * Created by windows 8.1 on 7/18/2016.
  */
@@ -61,6 +65,11 @@ public class UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public Map<String,Object> toMap(){
+        HashMap<String,Object> update=new HashMap<String,Object>();
+        return update;
     }
 
 }

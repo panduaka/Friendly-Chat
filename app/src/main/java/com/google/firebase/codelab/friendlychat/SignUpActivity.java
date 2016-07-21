@@ -121,7 +121,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             }
             else{
 
-                if(isEmailValid(email))
+                if(isEmailValid(email) && !email.equals("^[A-Za-z0-9._%+\\\\-]+@mailinator.com"))
                 {
                     auth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
@@ -133,7 +133,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                                         Toast.makeText(SignUpActivity.this, "Authentication failed." + task.getException(), Toast.LENGTH_SHORT).show();
                                         Log.i("Exception", String.valueOf(task.getException()));
                                     } else {
-                                        //writeNewuser(name,email);
                                         startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
                                         finish();
                                     }

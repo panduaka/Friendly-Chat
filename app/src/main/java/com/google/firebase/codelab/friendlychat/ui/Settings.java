@@ -12,6 +12,7 @@ import android.widget.EditText;
 import com.google.firebase.codelab.friendlychat.MainActivity;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Created by windows 8.1 on 7/20/2016.
@@ -31,6 +32,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
         name= (EditText)findViewById(R.id.editText8);
         save=(Button)findViewById(R.id.button4);
+        root= FirebaseDatabase.getInstance().getReference();
 
         save.setOnClickListener(this);
 

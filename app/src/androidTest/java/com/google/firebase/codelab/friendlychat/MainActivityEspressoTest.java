@@ -39,7 +39,7 @@ public class MainActivityEspressoTest {
 
     @Test
     public void verifySignUpButtonDisplayed() {
-        onView(ViewMatchers.withId(R.id.button_sign_up)).check(matches(isDisplayed()));
+        onView(ViewMatchers.withId(R.id.sign_in_button)).check(matches(isDisplayed()));
     }
 
 }
