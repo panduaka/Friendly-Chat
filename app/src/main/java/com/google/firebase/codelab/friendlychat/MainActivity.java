@@ -55,6 +55,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.codelab.friendlychat.ui.ChatHomeList;
 import com.google.firebase.codelab.friendlychat.ui.Settings;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DatabaseReference;
@@ -90,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         UserDetails userDetails = new UserDetails(name, number, IMEI, genderSelected, email);
         Log.i("Object", String.valueOf(userDetails));
-        mFirebaseDatabaseReference.child("USER").child(name).push().setValue(userDetails);
+        mFirebaseDatabaseReference.child("USER").push().setValue(userDetails);
+        //child(name)
 
         Log.i("Success", "True");
     }
@@ -361,6 +363,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             case R.id.settings:
                 Intent intent=new Intent(this,Settings.class);
                 startActivity(intent);
+                return true;
+            case R.id.users:
+                Intent intent1=new Intent(this, ChatHomeList.class);
+                startActivity(intent1);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -15,8 +15,7 @@ public class UserDetails {
     private String userID;
     private String gender;
 
-    UserDetails() {
-
+    public UserDetails() {
     }
 
     UserDetails(String name, String mobile, String userID, String gender, String email) {
@@ -69,6 +68,11 @@ public class UserDetails {
 
     public Map<String,Object> toMap(){
         HashMap<String,Object> update=new HashMap<String,Object>();
+        update.put("name",name);
+        update.put("email",email);
+        update.put("mobile",mobile);
+        update.put("userId",userID);
+        update.put("gender",gender);
         return update;
     }
 

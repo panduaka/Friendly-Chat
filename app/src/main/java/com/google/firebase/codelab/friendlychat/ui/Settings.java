@@ -11,8 +11,12 @@ import android.widget.EditText;
 
 import com.google.firebase.codelab.friendlychat.MainActivity;
 import com.google.firebase.codelab.friendlychat.R;
+import com.google.firebase.codelab.friendlychat.UserDetails;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by windows 8.1 on 7/20/2016.
@@ -42,10 +46,24 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
     public void onClick(View v) {
         if(v.getId()==R.id.button4){
 
+            String previousName=MainActivity.userDetailsHolder.getString("Name","name");
             String name=this.name.getText().toString();
+            //HashMap<String,Object> hashMap=new HashMap<String, Object>();
+            //hashMap.put("name",name);
             SharedPreferences.Editor editor=MainActivity.userDetailsHolder.edit();
             editor.putString("Name",name);
             editor.commit();
+
+//            String key = root.child("USER").child(previousName).push().getKey();
+//            UserDetails ud = new UserDetails(name, MainActivity.userDetailsHolder.getString(), title, body);
+//            Map<String, Object> postValues = post.toMap();
+//
+//            Map<String, Object> childUpdates = new HashMap<>();
+//            childUpdates.put("/posts/" + key, postValues);
+//            childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
+//
+//            mDatabase.updateChildren(childUpdates);
+
             Intent intent=new Intent(this,MainActivity.class);
             startActivity(intent);
             finish();

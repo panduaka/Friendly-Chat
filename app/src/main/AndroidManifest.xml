@@ -30,6 +30,9 @@
         <activity android:name=".ui.Settings"
             android:label="Settings"></activity>
 
+        <activity android:name=".ui.ChatHomeList"
+            android:label="Chat Home"></activity>
+
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
