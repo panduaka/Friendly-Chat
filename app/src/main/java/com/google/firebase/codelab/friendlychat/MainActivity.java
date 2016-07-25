@@ -1,12 +1,12 @@
 /**
  * Copyright Google Inc. All Rights Reserved.
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,13 +58,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.codelab.friendlychat.ui.ChatHomeList;
 import com.google.firebase.codelab.friendlychat.ui.Settings;
 import com.google.firebase.crash.FirebaseCrash;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -74,26 +78,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void informationUpload(String name, String number, String genderSelected) {
 
         Toast.makeText(this, name + number + genderSelected, Toast.LENGTH_LONG).show();
+        String uniqueID = UUID.randomUUID().toString();
         SharedPreferences.Editor editor = userDetailsHolder.edit();
         editor.putString("Name", name);
         editor.putString("Mobile", number);
         editor.putString("Gender", genderSelected);
         editor.putString("Email", email);
+        editor.putString("Unique ID", uniqueID);
         editor.commit();
         mUsername = userDetailsHolder.getString("Name", "Default");
-        writeData(name, number, genderSelected);
+        writeData(name, number, genderSelected, uniqueID);
     }
 
-    private void writeData(String name, String number, String genderSelected) {
+    private void writeData(String name, String number, String genderSelected, String uniqueID) {
 
-        TelephonyManager telephoneyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String IMEI = telephoneyManager.getDeviceId();
+//        TelephonyManager telephoneyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//        String IMEI = telephoneyManager.getDeviceId();
+        //String uniqueID = UUID.randomUUID().toString();
 
-        UserDetails userDetails = new UserDetails(name, number, IMEI, genderSelected, email);
+        UserDetails userDetails = new UserDetails(name, number, uniqueID, genderSelected, email, 1);
         Log.i("Object", String.valueOf(userDetails));
         mFirebaseDatabaseReference.child("USER").push().setValue(userDetails);
-        //child(name)
-
+        Log.i("UID", uniqueID);
         Log.i("Success", "True");
     }
 
@@ -320,8 +326,45 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             editor.commit();
         }
 
+        UserDetails userDetails = new UserDetails(1);
+        setOnlineStatus(userDetails);
         mUsername = userDetailsHolder.getString("Name", "Anonymous");
 
+    }
+
+    private void setOnlineStatus(final UserDetails userDetails) {
+
+        final String userId= MainActivity.userDetailsHolder.getString("Unique ID","unique");
+
+        mFirebaseDatabaseReference.child("USER").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    UserDetails userD = postSnapshot.getValue(UserDetails.class);
+
+                    String userID=userD.getUserID();
+                    if (userId.equals(userID)) {
+                        Log.i("nameeeeeeeeeeee", userD.getName());
+
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        UserDetails userDetails = new UserDetails(0);
     }
 
     @Override
@@ -330,6 +373,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 //            mAdView.destroy();
 //        }
         super.onDestroy();
+        UserDetails userDetails = new UserDetails(0);
     }
 
     @Override
@@ -361,11 +405,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 fetchConfig();
                 return true;
             case R.id.settings:
-                Intent intent=new Intent(this,Settings.class);
+                Intent intent = new Intent(this, Settings.class);
                 startActivity(intent);
                 return true;
             case R.id.users:
-                Intent intent1=new Intent(this, ChatHomeList.class);
+                Intent intent1 = new Intent(this, ChatHomeList.class);
                 startActivity(intent1);
                 return true;
             default:

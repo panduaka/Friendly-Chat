@@ -154,7 +154,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                             if (task.isSuccessful()) {
                                 Log.i("LogIn", "LogIn Successful");
                                 Toast.makeText(SignInActivity.this, "LogIn Successful", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SignInActivity.this, ChatHomeList.class);
+                                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                 intent.putExtra("email", email);
                                 startActivity(intent);
                                 finish();

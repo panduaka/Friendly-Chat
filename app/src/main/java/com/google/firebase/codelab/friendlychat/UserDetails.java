@@ -14,16 +14,23 @@ public class UserDetails {
     private String mobile;
     private String userID;
     private String gender;
+    private int online_offline_status;
 
     public UserDetails() {
+        this.online_offline_status = 0;
     }
 
-    UserDetails(String name, String mobile, String userID, String gender, String email) {
+    public UserDetails(int online_offline_status) {
+        this.online_offline_status = online_offline_status;
+    }
+
+    UserDetails(String name, String mobile, String userID, String gender, String email,int online_offline_status) {
         this.name = name;
         this.mobile = mobile;
         this.userID = userID;
         this.gender = gender;
         this.email = email;
+        this.online_offline_status=online_offline_status;
     }
 
     public void setName(String name) {
@@ -66,13 +73,21 @@ public class UserDetails {
         return email;
     }
 
-    public Map<String,Object> toMap(){
-        HashMap<String,Object> update=new HashMap<String,Object>();
-        update.put("name",name);
-        update.put("email",email);
-        update.put("mobile",mobile);
-        update.put("userId",userID);
-        update.put("gender",gender);
+    public int getOnline_offline_status() {
+        return online_offline_status;
+    }
+
+    public void setOnline_offline_status(int online_offline_status) {
+        this.online_offline_status = online_offline_status;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> update = new HashMap<String, Object>();
+        update.put("name", name);
+        update.put("email", email);
+        update.put("mobile", mobile);
+        update.put("userId", userID);
+        update.put("gender", gender);
         return update;
     }
 
