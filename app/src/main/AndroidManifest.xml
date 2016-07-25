@@ -12,10 +12,10 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.google.firebase.codelab.friendlychat.MainActivity">
+        <activity android:name="com.google.firebase.codelab.friendlychat.MainActivity"
+            android:label="Chat">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -31,7 +31,8 @@
             android:label="Settings"></activity>
 
         <activity android:name=".ui.ChatHomeList"
-            android:label="Chat Home"></activity>
+            android:label="Friendly Chat">
+        </activity>
 
         <service
             android:name=".MyFirebaseMessagingService"

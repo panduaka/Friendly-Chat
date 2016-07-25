@@ -1,9 +1,12 @@
 package com.google.firebase.codelab.friendlychat.ui;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -11,6 +14,8 @@ import com.firebase.client.Firebase;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.codelab.friendlychat.MainActivity;
 import com.google.firebase.codelab.friendlychat.R;
 import com.google.firebase.codelab.friendlychat.UserDetails;
 import com.google.firebase.database.ChildEventListener;
@@ -29,11 +34,12 @@ import java.util.Map;
 /**
  * Created by windows 8.1 on 7/21/2016.
  */
-public class ChatHomeList extends AppCompatActivity {
+public class ChatHomeList extends AppCompatActivity implements AdapterView.OnItemClickListener {
     ListView listView;
     ArrayList<String> arrayList=new ArrayList<>();
 
     private FirebaseAuth auth;
+    private FirebaseUser user;
     private DatabaseReference rootRef;
     private ArrayAdapter<String> adapter;
 
@@ -41,11 +47,14 @@ public class ChatHomeList extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_home);
         listView=(ListView)findViewById(R.id.list);  //getting the ID of ListView
 
+        auth=FirebaseAuth.getInstance();
         rootRef= FirebaseDatabase.getInstance().getReference();
+        user= auth.getCurrentUser();
 
     }
 
@@ -86,6 +95,14 @@ public class ChatHomeList extends AppCompatActivity {
             }
         });
 
+        listView.setOnItemClickListener(this);
 
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Intent intent=new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
