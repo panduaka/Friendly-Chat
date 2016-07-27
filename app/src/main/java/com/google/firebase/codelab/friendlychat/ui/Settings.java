@@ -1,5 +1,6 @@
 package com.google.firebase.codelab.friendlychat.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,6 +30,9 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
     //Database
     private DatabaseReference root;
 
+    //SharedPreference
+    private SharedPreferences userDetailsHolder;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,8 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         save=(Button)findViewById(R.id.button4);
         root= FirebaseDatabase.getInstance().getReference();
 
+        userDetailsHolder=getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
+
         save.setOnClickListener(this);
 
     }
@@ -46,11 +52,11 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
     public void onClick(View v) {
         if(v.getId()==R.id.button4){
 
-            String previousName=MainActivity.userDetailsHolder.getString("Name","name");
+            String previousName=userDetailsHolder.getString("Name","name");
             String name=this.name.getText().toString();
             //HashMap<String,Object> hashMap=new HashMap<String, Object>();
             //hashMap.put("name",name);
-            SharedPreferences.Editor editor=MainActivity.userDetailsHolder.edit();
+            SharedPreferences.Editor editor=userDetailsHolder.edit();
             editor.putString("Name",name);
             editor.commit();
 

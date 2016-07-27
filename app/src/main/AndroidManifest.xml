@@ -14,10 +14,6 @@
         android:theme="@style/AppTheme">
         <activity android:name="com.google.firebase.codelab.friendlychat.MainActivity"
             android:label="Chat">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
 
         <activity android:name=".SignInActivity" />
@@ -28,10 +24,15 @@
         </activity>
 
         <activity android:name=".ui.Settings"
-            android:label="Settings"></activity>
+            android:label="Settings">
+        </activity>
 
         <activity android:name=".ui.ChatHomeList"
-            android:label="Friendly Chat">
+            android:label="Friends Online">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
 
         <service

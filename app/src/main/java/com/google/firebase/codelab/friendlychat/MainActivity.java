@@ -55,6 +55,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.codelab.friendlychat.message.OntoOneMessage;
 import com.google.firebase.codelab.friendlychat.ui.ChatHomeList;
 import com.google.firebase.codelab.friendlychat.ui.Settings;
 import com.google.firebase.crash.FirebaseCrash;
@@ -128,10 +129,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private SharedPreferences mSharedPreferences;
     private SharedPreferences firstRun;
     private SharedPreferences userEmailHolder;
-    public static SharedPreferences userDetailsHolder;
+    private SharedPreferences userDetailsHolder;
 
     private EditText mMessageEditText;
     //private AdView mAdView;
+    private String recieverName;
     private String email;
     private String mUsername;
     private String mPhotoUrl;
@@ -164,27 +166,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         userDetailsHolder = getSharedPreferences("UserDetails", Context.MODE_PRIVATE);
         firstRun = getSharedPreferences("FirstRun", Context.MODE_PRIVATE);
 
-        email = getIntent().getStringExtra("email");
+        //email = getIntent().getStringExtra("email");
+        // Getting Intent Data
+        recieverName=getIntent().getStringExtra("Name");
+        this.setTitle(recieverName);
+
 
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser(); //getting the current user
 
-        if (mFirebaseUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-            return;
-        }
-//        else {
-//
-//            if(email!=null){
-//                initialization();
-//            }
-//            else {
-//                Toast.makeText(this,"Email was empty",Toast.LENGTH_SHORT).show();
-//            }
-//
+        //Firebase DataBase Reference
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+//        if (mFirebaseUser == null) {
+//            // Not signed in, launch the Sign In activity
+//            startActivity(new Intent(this, SignInActivity.class));
+//            finish();
+//            return;
 //        }
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -197,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
 
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
         mFirebaseAdapter = new FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>(
                 FriendlyMessage.class,
                 R.layout.item_message,
@@ -287,23 +286,59 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
 
         mSendButton = (Button) findViewById(R.id.sendButton);
+
         mSendButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+
+                final OntoOneMessage ontoOneMessage=new OntoOneMessage(mUsername,recieverName,mMessageEditText.getText().toString());
+                final String userID=userDetailsHolder.getString("Unique ID","ID");
+
+                mFirebaseDatabaseReference.child("USER").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                            UserDetails userDetails = postSnapshot.getValue(UserDetails.class);
+                            String userId=userDetails.getUserID();
+
+                            if (userID.equals(userId)) {
+                                Log.i("name", userDetails.getName());
+                                String name=userDetails.getName();
+                                //Log.i("GGGGG", String.valueOf(mFirebaseDatabaseReference.child("USER").child(name).child("Panduka").getKey()));
+                                //mFirebaseDatabaseReference.child("USER").child(name).child(recieverName).push().setValue(ontoOneMessage);
+                                mFirebaseDatabaseReference.child("OnetoOne").child(mUsername).child(recieverName).push().setValue(ontoOneMessage);
+                                mFirebaseDatabaseReference.child("OnetoOne").child(recieverName).child(mUsername).push().setValue(ontoOneMessage);
+                                mMessageEditText.setText("");
+                                mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT,null);
+
+                            }
+
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
                 FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, mPhotoUrl);
                 mFirebaseDatabaseReference.child(MESSAGES_CHILD).push().setValue(friendlyMessage);
-                mMessageEditText.setText("");
                 mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT, null);
+
+                // One to One Message Service
+//                mFirebaseDatabaseReference.child("OnetoOne").push().setValue(ontoOneMessage);
+//                mMessageEditText.setText("");
+//                mFirebaseAnalytics.logEvent(MESSAGE_SENT_EVENT,null);
             }
         });
     }
 
-//    private void initialization() {
-//        SharedPreferences.Editor editor = userEmailHolder.edit();
-//        editor.putString("email", email);
-//        editor.commit();
-//        //mUsername=userDetailsHolder.getString("Name","Anonymous");
-//    }
+
 
     @Override
     public void onPause() {
@@ -316,15 +351,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         Log.i("FirstRun", String.valueOf(firstRun.getBoolean("FirstRun", true)));
 
-        if (firstRun.getBoolean("FirstRun", true)) {
-
-            USerDetailsAlertDialog uSerDetailsAlertDialog = new USerDetailsAlertDialog();
-            uSerDetailsAlertDialog.show(getFragmentManager(), "UserInformation");
-
-            SharedPreferences.Editor editor = firstRun.edit();
-            editor.putBoolean("FirstRun", false);
-            editor.commit();
-        }
+//        if (firstRun.getBoolean("FirstRun", true)) {
+//
+//            USerDetailsAlertDialog uSerDetailsAlertDialog = new USerDetailsAlertDialog();
+//            uSerDetailsAlertDialog.show(getFragmentManager(), "UserInformation");
+//
+//            SharedPreferences.Editor editor = firstRun.edit();
+//            editor.putBoolean("FirstRun", false);
+//            editor.commit();
+//        }
 
         UserDetails userDetails = new UserDetails(1);
         setOnlineStatus(userDetails);
@@ -334,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private void setOnlineStatus(final UserDetails userDetails) {
 
-        final String userId= MainActivity.userDetailsHolder.getString("Unique ID","unique");
+        final String userId= userDetailsHolder.getString("Unique ID","unique");
 
         mFirebaseDatabaseReference.child("USER").addValueEventListener(new ValueEventListener() {
             @Override
@@ -369,9 +404,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     @Override
     public void onDestroy() {
-//        if (mAdView != null) {
-//            mAdView.destroy();
-//        }
         super.onDestroy();
         UserDetails userDetails = new UserDetails(0);
     }

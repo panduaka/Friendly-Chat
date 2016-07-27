@@ -1,5 +1,7 @@
 package com.google.firebase.codelab.friendlychat;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -15,6 +17,7 @@ public class UserDetails {
     private String userID;
     private String gender;
     private int online_offline_status;
+
 
     public UserDetails() {
         this.online_offline_status = 0;
@@ -80,6 +83,8 @@ public class UserDetails {
     public void setOnline_offline_status(int online_offline_status) {
         this.online_offline_status = online_offline_status;
     }
+
+
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> update = new HashMap<String, Object>();
